@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#667eea">
+    <title>聚类算法交互式可视化演示系统</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部标题 -->
+        <header>
+            <div class="header-content">
+                <h1>🎯 聚类算法可视化</h1>
+                <button class="help-btn" id="helpBtn" aria-label="帮助">❓</button>
+            </div>
+            <p class="subtitle">实时观看算法执行过程 | 数据挖掘课程教学工具</p>
+        </header>
+
+        <!-- 主要内容区 -->
+        <div class="main-content">
+            <!-- 左侧控制面板 -->
+            <aside class="control-panel">
+                <!-- 算法选择 -->
+                <div class="accordion-item">
+                    <button class="accordion-header active">
+                        <span>📊 算法选择</span>
+                        <span class="accordion-icon">▼</span>
+                    </button>
+                    <div class="accordion-content show">
+                        <div class="accordion-body">
+                            <div class="algorithm-buttons">
+                                <button class="algo-btn active" data-algo="dbscan">
+                                    <span class="algo-icon">🔵</span>
+                                    DBSCAN<br>
+                                    <small>基于密度</small>
+                                </button>
+                                <button class="algo-btn" data-algo="grid">
+                                    <span class="algo-icon">🟦</span>
+                                    网格聚类<br>
+                                    <small>CLIQUE</small>
+                                </button>
+                                <button class="algo-btn" data-algo="gmm">
+                                    <span class="algo-icon">🟣</span>
+                                    GMM<br>
+                                    <small>高斯混合</small>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据集选择 -->
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>🎲 数据集选择</span>
+                        <span class="accordion-icon">▶</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <select id="datasetSelect" class="select-input">
+                                <option value="blobs">球形簇 (Blobs)</option>
+                                <option value="moons">月牙形 (Moons)</option>
+                                <option value="circles">同心圆 (Circles)</option>
+                                <option value="random">随机点</option>
+                                <option value="custom">自定义（点击画布）</option>
+                            </select>
+                            <button id="generateData" class="btn btn-primary">重新生成数据</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DBSCAN 参数 -->
+                <div class="accordion-item" id="dbscanParams">
+                    <button class="accordion-header">
+                        <span>⚙️ DBSCAN 参数</span>
+                        <span class="accordion-icon">▶</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="param-group">
+                                <label>
+                                    邻域半径 (ε): <span id="epsValue">0.15</span>
+                                </label>
+                                <input type="range" id="epsSlider" min="0.05" max="0.5" step="0.01" value="0.15">
+                            </div>
+                            <div class="param-group">
+                                <label>
+                                    最小样本数: <span id="minPtsValue">5</span>
+                                </label>
+                                <input type="range" id="minPtsSlider" min="2" max="15" step="1" value="5">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 网格聚类参数 -->
+                <div class="accordion-item hidden" id="gridParams">
+                    <button class="accordion-header">
+                        <span>⚙️ 网格参数</span>
+                        <span class="accordion-icon">▶</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="param-group">
+                                <label>
+                                    网格大小: <span id="gridSizeValue">15</span>
+                                </label>
+                                <input type="range" id="gridSizeSlider" min="5" max="30" step="1" value="15">
+                            </div>
+                            <div class="param-group">
+                                <label>
+                                    密度阈值: <span id="densityValue">3</span>
+                                </label>
+                                <input type="range" id="densitySlider" min="1" max="10" step="1" value="3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GMM 参数 -->
+                <div class="accordion-item hidden" id="gmmParams">
+                    <button class="accordion-header">
+                        <span>⚙️ GMM 参数</span>
+                        <span class="accordion-icon">▶</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="param-group">
+                                <label>
+                                    簇数量 (K): <span id="kValue">3</span>
+                                </label>
+                                <input type="range" id="kSlider" min="2" max="6" step="1" value="3">
+                            </div>
+                            <div class="param-group">
+                                <label>
+                                    <input type="checkbox" id="showEllipse" checked>
+                                    显示高斯椭圆
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 动画控制 -->
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>🎬 动画控制</span>
+                        <span class="accordion-icon">▶</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="control-buttons">
+                                <button id="playBtn" class="btn btn-success">
+                                    <span class="icon">▶️</span> 开始
+                                </button>
+                                <button id="pauseBtn" class="btn btn-warning">
+                                    <span class="icon">⏸️</span> 暂停
+                                </button>
+                                <button id="resetBtn" class="btn btn-danger">
+                                    <span class="icon">🔄</span> 重置
+                                </button>
+                                <button id="stepBtn" class="btn btn-info">
+                                    <span class="icon">⏭️</span> 单步
+                                </button>
+                            </div>
+                            <div class="param-group">
+                                <label>
+                                    动画速度: <span id="speedValue">正常</span>
+                                </label>
+                                <input type="range" id="speedSlider" min="1" max="5" step="1" value="3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 统计信息 -->
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>📈 统计信息</span>
+                        <span class="accordion-icon">▶</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="stats-box">
+                                <div class="stat-item">
+                                    <span class="stat-label">数据点数:</span>
+                                    <span class="stat-value" id="pointCount">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">簇数量:</span>
+                                    <span class="stat-value" id="clusterCount">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">噪声点:</span>
+                                    <span class="stat-value" id="noiseCount">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">当前步骤:</span>
+                                    <span class="stat-value" id="currentStep">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 算法说明 -->
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>ℹ️ 算法说明</span>
+                        <span class="accordion-icon">▶</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="info-box" id="algoInfo">
+                                <p><strong>DBSCAN（基于密度的聚类）</strong></p>
+                                <ul>
+                                    <li>🔵 蓝色圆圈：核心点</li>
+                                    <li>🟢 绿色：边界点</li>
+                                    <li>🔴 红色：噪声点</li>
+                                    <li>⚡ 可发现任意形状的簇</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 右侧可视化画布 -->
+            <main class="visualization-area">
+                <div class="canvas-wrapper">
+                    <canvas id="mainCanvas"></canvas>
+                    <div class="canvas-overlay" id="stepInfo">
+                        <div class="step-indicator">
+                            <h4>算法步骤</h4>
+                            <p id="stepDescription">准备开始...</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图例 -->
+                <div class="legend">
+                    <h4>🎨 图例</h4>
+                    <div class="legend-items" id="legendItems">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- 移动端固定底部操作栏 -->
+        <div class="mobile-controls">
+            <button class="control-btn" id="playBtnMobile" title="开始">▶️</button>
+            <button class="control-btn" id="pauseBtnMobile" title="暂停">⏸️</button>
+            <button class="control-btn" id="resetBtnMobile" title="重置">🔄</button>
+            <button class="control-btn" id="stepBtnMobile" title="单步">⏭️</button>
+        </div>
+
+        <!-- 帮助模态对话框 -->
+        <div class="modal" id="helpModal">
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>💡 使用帮助</h3>
+                    <button class="modal-close" aria-label="关闭">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <h4>📚 基本使用</h4>
+                    <ul>
+                        <li>选择不同的算法和数据集进行对比实验</li>
+                        <li>调整参数可以实时看到效果变化</li>
+                        <li>使用"单步"模式可以详细观察算法每一步</li>
+                        <li>选择"自定义"数据集后，可以在画布上点击添加数据点</li>
+                    </ul>
+
+                    <h4>🎮 动画控制</h4>
+                    <ul>
+                        <li><strong>▶️ 开始</strong> - 播放算法执行动画</li>
+                        <li><strong>⏸️ 暂停</strong> - 暂停当前动画</li>
+                        <li><strong>🔄 重置</strong> - 回到第一步</li>
+                        <li><strong>⏭️ 单步</strong> - 逐步执行，适合详细讲解</li>
+                    </ul>
+
+                    <h4>⚙️ 参数说明</h4>
+                    <p><strong>DBSCAN 参数</strong></p>
+                    <ul>
+                        <li><strong>邻域半径 (ε)</strong> - 确定点的邻域范围。值越大，簇越大，噪声点越少</li>
+                        <li><strong>最小样本数</strong> - 成为核心点所需的最小邻居数。值越大，簇越密集，噪声点越多</li>
+                    </ul>
+
+                    <p><strong>网格聚类参数</strong></p>
+                    <ul>
+                        <li><strong>网格大小</strong> - 将空间划分为多少个网格</li>
+                        <li><strong>密度阈值</strong> - 网格内至少有多少点才算密集</li>
+                    </ul>
+
+                    <p><strong>GMM 参数</strong></p>
+                    <ul>
+                        <li><strong>簇数量 (K)</strong> - 高斯分量的数量，需要事先指定</li>
+                        <li><strong>显示高斯椭圆</strong> - 是否显示每个高斯分量的2σ椭圆</li>
+                    </ul>
+
+                    <h4>🎨 颜色编码</h4>
+                    <ul>
+                        <li>灰色 - 未访问的点</li>
+                        <li>红色 - 噪声点</li>
+                        <li>彩色 - 不同的簇（自动分配颜色）</li>
+                        <li>黑边 - 核心点（DBSCAN）</li>
+                        <li>十字 - 均值中心（GMM）</li>
+                        <li>虚线椭圆 - 高斯分布（GMM）</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="algorithms.js"></script>
+    <script src="visualization.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
+
