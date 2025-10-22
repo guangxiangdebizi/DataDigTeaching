@@ -233,11 +233,17 @@
                 <div class="canvas-wrapper">
                     <canvas id="mainCanvas"></canvas>
                     <div class="canvas-overlay" id="stepInfo">
-                        <div class="step-indicator">
-                            <h4>算法步骤</h4>
-                            <p id="stepDescription">准备开始...</p>
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="progressFill"></div>
+                        <div class="step-indicator collapsed">
+                            <button class="step-toggle" id="stepToggle" title="展开/收起步骤信息">
+                                <span class="toggle-icon">📊</span>
+                                <span class="toggle-text">步骤</span>
+                            </button>
+                            <div class="step-content">
+                                <h4>算法步骤</h4>
+                                <p id="stepDescription">准备开始...</p>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progressFill"></div>
+                                </div>
                             </div>
                         </div>
                     </div>

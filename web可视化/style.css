@@ -413,14 +413,72 @@ header h1 {
 
 .step-indicator {
     background: rgba(255, 255, 255, 0.95);
-    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
     max-width: 400px;
+    transition: all 0.3s ease;
 }
 
-.step-indicator h4 {
+/* 折叠按钮 */
+.step-toggle {
+    width: 100%;
+    padding: 12px 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.step-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+}
+
+.step-toggle:active {
+    transform: translateY(0);
+}
+
+.toggle-icon {
+    font-size: 1.2em;
+}
+
+.toggle-text {
+    flex: 1;
+    text-align: left;
+}
+
+/* 步骤内容区 */
+.step-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 0 20px;
+}
+
+.step-indicator:not(.collapsed) .step-content {
+    max-height: 500px;
+    padding: 20px;
+    padding-top: 15px;
+}
+
+.step-indicator.collapsed {
+    max-width: 120px;
+}
+
+.step-indicator:not(.collapsed) {
+    max-width: 400px;
+}
+
+.step-content h4 {
     color: #667eea;
     margin-bottom: 10px;
     font-size: 1.2em;
@@ -792,9 +850,29 @@ header h1 {
     }
 
     .step-indicator {
-        max-width: 90%;
-        padding: 15px;
         font-size: 0.9em;
+    }
+    
+    .step-indicator.collapsed {
+        max-width: 80px;
+    }
+    
+    .step-toggle {
+        padding: 10px 12px;
+        font-size: 0.9em;
+    }
+    
+    .toggle-icon {
+        font-size: 1em;
+    }
+    
+    .step-content h4 {
+        font-size: 1em;
+    }
+    
+    #stepDescription {
+        min-height: 40px;
+        font-size: 0.85em;
     }
 
     .legend {

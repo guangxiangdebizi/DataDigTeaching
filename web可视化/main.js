@@ -143,6 +143,9 @@ class ClusteringApp {
         // 初始化移动端操作栏
         this.initMobileControls();
         
+        // 初始化步骤指示器折叠功能
+        this.initStepToggle();
+        
         // 运行初始聚类
         this.runClustering();
     }
@@ -242,6 +245,28 @@ class ClusteringApp {
         document.getElementById('pauseBtnMobile').addEventListener('click', () => this.pause());
         document.getElementById('resetBtnMobile').addEventListener('click', () => this.reset());
         document.getElementById('stepBtnMobile').addEventListener('click', () => this.nextStep());
+    }
+    
+    // ============= 步骤指示器折叠 =============
+    initStepToggle() {
+        const stepToggle = document.getElementById('stepToggle');
+        const stepIndicator = document.querySelector('.step-indicator');
+        const toggleText = document.querySelector('.toggle-text');
+        
+        stepToggle.addEventListener('click', () => {
+            const isCollapsed = stepIndicator.classList.contains('collapsed');
+            
+            if (isCollapsed) {
+                stepIndicator.classList.remove('collapsed');
+                toggleText.textContent = '收起';
+            } else {
+                stepIndicator.classList.add('collapsed');
+                toggleText.textContent = '步骤';
+            }
+        });
+        
+        // 允许点击按钮（移除pointer-events: none的限制）
+        stepToggle.style.pointerEvents = 'auto';
     }
     
     bindEvents() {
